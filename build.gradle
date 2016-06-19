@@ -1,0 +1,59 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin:'application'
+apply plugin: 'war'
+
+mainClassName = "console.Main"
+
+sourceCompatibility = 1.8
+version = '1.0'
+jar {
+    manifest {
+        attributes 'Main-Class': 'chessui.JavaFX'
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'mysql:mysql-connector-java:5.1.34'
+    compile 'org.hibernate:hibernate-entitymanager:5.0.6.Final'
+    compile 'org.hibernate:hibernate-java8:5.0.6.Final'
+    compile 'javax.transaction:jta:1.1'
+    compile 'com.google.code.gson:gson:2.6.2'
+
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+    testCompile 'pl.pragmatists:JUnitParams:1.0.4'
+    testCompile 'org.mockito:mockito-all:1.10.19'
+    testCompile 'com.google.code.tempus-fugit:tempus-fugit:1.1'
+
+    providedCompile 'javax:javaee-api:7.0'
+}
+
+test {
+    //exclude classes ending with IT from the test task
+    exclude '**/*IT.class'
+}
+//the integrationTest task includes classes ending with IT
+task integrationTest(type: Test){
+    include '**/*IT.class'
+}
+check.dependsOn integrationTest
+
+task deploy (type: Copy) {
+    from 'build/libs'
+    //into 'C:/Users/User/Downloads/payara-4.1.1.161/payara41/glassfish/domains/domain1/autodeploy'
+    include '**/*.war'
+}
+deploy.dependsOn build
+
+eclipse {
+    classpath {
+        downloadJavadoc = true
+    }
+}
+
+
+
